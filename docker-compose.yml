@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: rezero-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: rezero_db
+      MYSQL_USER: rezero_user
+      MYSQL_PASSWORD: rezero_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - rezero-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Spring Boot Application
+  spring-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.spring
+    container_name: rezero-spring
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/rezero_db
+      SPRING_DATASOURCE_USERNAME: rezero_user
+      SPRING_DATASOURCE_PASSWORD: rezero_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      AI_SERVER_URL: http://ai-server:8001
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - rezero-network
+
+  # FastAPI AI Server (별도 레포지토리)
+  ai-server:
+    build:
+      context: ../AI_Server
+      dockerfile: Dockerfile
+    container_name: rezero-ai-server
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "8001:8001"
+    networks:
+      - rezero-network
+
+volumes:
+  mysql_data:
+
+networks:
+  rezero-network:
+    driver: bridge

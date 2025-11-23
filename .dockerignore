@@ -1,0 +1,14 @@
+.git
+.gitignore
+.DS_Store
+.idea
+.gradle
+build/
+node_modules/
+*.log
+.env
+.env.local
+__pycache__
+*.pyc
+.pytest_cache
+*.egg-info
