@@ -5,41 +5,23 @@ services:
   mysql:
     image: mysql:8.0
     container_name: rezero-mysql
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: rezero_db
-      MYSQL_USER: rezero_user
-      MYSQL_PASSWORD: rezero_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - rezero-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD}"]
       timeout: 20s
       retries: 10
-
-  # Spring Boot Application
-  spring-app:
-    build:
-      context: .
-      dockerfile: Dockerfile.spring
-    container_name: rezero-spring
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/rezero_db
-      SPRING_DATASOURCE_USERNAME: rezero_user
-      SPRING_DATASOURCE_PASSWORD: rezero_password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      AI_SERVER_URL: http://ai-server:8001
-    ports:
-      - "8080:8080"
-    depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - rezero-network
 
   # FastAPI AI Server (별도 레포지토리)
   ai-server:
