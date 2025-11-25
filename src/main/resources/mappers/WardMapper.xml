@@ -53,6 +53,36 @@
     ORDER BY created_at DESC
   </select>
 
+<!-- 3) 특정 보호자의 특정 피보호자 상세 조회 -->
+    <select id="selectByWardId"
+            parameterType="int"
+            resultType="com.rezero.anyotherday.ward.dto.WardDto">
+        SELECT
+        ward_id      AS wardId,
+        guardian_id  AS guardianId,
+        name,
+        age,
+        gender,
+        phone,
+        relationship,
+        diagnosis,
+        created_at   AS createdAt,
+        updated_at   AS updatedAt,
+        status
+        FROM ward
+        WHERE ward_id = #{wardId}
+        AND status = 'active'
+    </select>
+
+    <!-- 4) 자가진단(diagnosis)만 수정 -->
+    <update id="updateDiagnosis" parameterType="map">
+        UPDATE ward
+        SET
+        diagnosis  = #{diagnosis},
+        updated_at = NOW()
+        WHERE ward_id = #{wardId}
+        AND status = 'active'
+    </update>
 
 
 </mapper>
