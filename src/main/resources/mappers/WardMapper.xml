@@ -5,6 +5,30 @@
 
 <mapper namespace="com.rezero.anyotherday.ward.dao.WardDao">
 
-  <!-- 나중에 채워요 -->
+  <!-- 1) 피보호자 생성 -->
+  <insert id="insertWard"
+    parameterType="com.rezero.anyotherday.ward.dto.WardDto"
+    useGeneratedKeys="true"
+    keyProperty="wardId"
+    keyColumn="ward_id">
+    INSERT INTO ward (
+    guardian_id,
+    name,
+    age,
+    gender,
+    phone,
+    relationship,
+    diagnosis
+    )
+    VALUES (
+    #{guardianId},
+    #{name},
+    #{age},
+    #{gender},
+    #{phone},
+    #{relationship},
+    #{diagnosis}
+    )
+  </insert>
 
 </mapper>
