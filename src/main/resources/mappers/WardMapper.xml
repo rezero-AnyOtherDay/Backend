@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rezero.anyotherday.ward.dao.WardDao">
+
+  <!-- 1) 피보호자 생성 -->
+  <insert id="insertWard"
+    parameterType="com.rezero.anyotherday.ward.dto.WardDto"
+    useGeneratedKeys="true"
+    keyProperty="wardId"
+    keyColumn="ward_id">
+    INSERT INTO ward (
+    guardian_id,
+    name,
+    age,
+    gender,
+    phone,
+    relationship,
+    diagnosis
+    )
+    VALUES (
+    #{guardianId},
+    #{name},
+    #{age},
+    #{gender},
+    #{phone},
+    #{relationship},
+    #{diagnosis}
+    )
+  </insert>
+
+</mapper>

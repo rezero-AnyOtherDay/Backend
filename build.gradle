@@ -47,6 +47,18 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // mysql 추가
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    //gradle 추가
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    //롬복
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+    testCompileOnly 'org.projectlombok:lombok:1.18.36'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+    //
+
 }
 
 tasks.named('test') {
