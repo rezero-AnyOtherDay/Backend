@@ -1,58 +1,64 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.rezero.anyotherday.report.dao.ReportDao">
 
-    <!-- AI ì¸ Ý1 -->
-    <insert id="createReport" parameterType="com.rezero.anyotherday.report.dto.ReportDto" useGeneratedKeys="true" keyProperty="reportId">
+    <insert id="createReport"
+      parameterType="com.rezero.anyotherday.report.dto.ReportDto"
+      useGeneratedKeys="true"
+      keyProperty="reportId">
         INSERT INTO ai_report (record_id, analysis_result)
         VALUES (#{recordId}, #{analysisResult})
     </insert>
 
-    <!-- ì¸ ID\ pŒ -->
-    <select id="getReportById" parameterType="Integer" resultType="com.rezero.anyotherday.report.dto.ReportDto">
+    <select id="getReportById"
+      parameterType="Integer"
+      resultType="com.rezero.anyotherday.report.dto.ReportDto">
         SELECT report_id, record_id, analysis_result, created_at, updated_at
         FROM ai_report
         WHERE report_id = #{reportId}
     </select>
 
-    <!-- $$ TÜ\ ì¸ pŒ -->
-    <select id="getReportByRecordId" parameterType="Integer" resultType="com.rezero.anyotherday.report.dto.ReportDto">
+    <select id="getReportByRecordId"
+      parameterType="Integer"
+      resultType="com.rezero.anyotherday.report.dto.ReportDto">
         SELECT report_id, record_id, analysis_result, created_at, updated_at
         FROM ai_report
         WHERE record_id = #{recordId}
     </select>
 
-    <!-- <ô8X ¨à ì¸ pŒ -->
-    <select id="getReportsByWardId" parameterType="Integer" resultType="com.rezero.anyotherday.report.dto.ReportDto">
+    <select id="getReportsByWardId"
+      parameterType="Integer"
+      resultType="com.rezero.anyotherday.report.dto.ReportDto">
         SELECT ar.report_id, ar.record_id, ar.analysis_result, ar.created_at, ar.updated_at
         FROM ai_report ar
-        JOIN audio_record aud ON ar.record_id = aud.record_id
+                 JOIN audio_record aud ON ar.record_id = aud.record_id
         WHERE aud.ward_id = #{wardId}
         ORDER BY ar.created_at DESC
     </select>
 
-    <!-- ì¸ Åpt¸ -->
-    <update id="updateReport" parameterType="com.rezero.anyotherday.report.dto.ReportDto">
+    <update id="updateReport"
+      parameterType="com.rezero.anyotherday.report.dto.ReportDto">
         UPDATE ai_report
         SET analysis_result = #{analysisResult},
             updated_at = #{updatedAt}
         WHERE report_id = #{reportId}
     </update>
 
-    <!-- ì¸ ­ -->
     <delete id="deleteReport" parameterType="Integer">
         DELETE FROM ai_report
         WHERE report_id = #{reportId}
     </delete>
 
-    <!-- \ü N ì¸ pŒ -->
-    <select id="getRecentReports" parameterType="Integer" resultType="com.rezero.anyotherday.report.dto.ReportDto">
+    <select id="getRecentReports"
+      parameterType="Integer"
+      resultType="com.rezero.anyotherday.report.dto.ReportDto">
         SELECT report_id, record_id, analysis_result, created_at, updated_at
         FROM ai_report
         ORDER BY created_at DESC
-        LIMIT #{limit}
+            LIMIT #{limit}
     </select>
 
 </mapper>
