@@ -1,21 +1,16 @@
--- =============================================
--- AnyOtherDay MVP Schema (Integrated)
--- Tables: Guardian, Ward, AudioRecord, AIReport
--- =============================================
-
-DROP TABLE IF EXISTS AIReport;
-DROP TABLE IF EXISTS AudioRecord;
-DROP TABLE IF EXISTS Ward;
-DROP TABLE IF EXISTS Guardian;
+DROP TABLE IF EXISTS ai_report;
+DROP TABLE IF EXISTS audio_record;
+DROP TABLE IF EXISTS ward;
+DROP TABLE IF EXISTS guardian;
 
 -- ---------------------------------------------
--- 1. Guardian (보호자)
+-- guardian
 -- ---------------------------------------------
-CREATE TABLE Guardian (
+CREATE TABLE guardian (
     guardian_id   INT AUTO_INCREMENT PRIMARY KEY,
     name          VARCHAR(255) NOT NULL,
     email         VARCHAR(255) NOT NULL UNIQUE,
-    password      VARCHAR(255) NOT NULL,   -- MVP: plain text
+    password      VARCHAR(255) NOT NULL,
     phone         VARCHAR(20)  NOT NULL,
     created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -23,15 +18,15 @@ CREATE TABLE Guardian (
 );
 
 -- ---------------------------------------------
--- 2. Ward (피보호자)
+-- ward
 -- ---------------------------------------------
-CREATE TABLE Ward (
+CREATE TABLE ward (
     ward_id        INT AUTO_INCREMENT PRIMARY KEY,
     guardian_id    INT NOT NULL,
 
     name           VARCHAR(255) NOT NULL,
     age            INT NOT NULL,
-    gender         ENUM('MALE', 'FEMALE') NOT NULL,
+    gender         ENUM('male', 'female') NOT NULL,
     phone          VARCHAR(15) NOT NULL,
     relationship   VARCHAR(50) NOT NULL,
 
@@ -41,54 +36,56 @@ CREATE TABLE Ward (
     updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     status         ENUM('active', 'deleted') NOT NULL DEFAULT 'active',
 
-    CONSTRAINT FK_Guardian_TO_Ward
+    CONSTRAINT fk_guardian_to_ward
         FOREIGN KEY (guardian_id)
-        REFERENCES Guardian(guardian_id)
+        REFERENCES guardian(guardian_id)
         ON DELETE RESTRICT
 );
 
-CREATE INDEX idx_ward_guardian ON Ward(guardian_id);
+CREATE INDEX idx_ward_guardian ON ward(guardian_id);
 
 -- ---------------------------------------------
--- 3. AudioRecord (음성 기록)
+-- audio_record
 -- ---------------------------------------------
-CREATE TABLE AudioRecord (
+CREATE TABLE audio_record (
     record_id       INT AUTO_INCREMENT PRIMARY KEY,
     ward_id         INT NOT NULL,
 
-    uploaded_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 서버 업로드 시각
-    recorded_at     DATETIME NULL,                              -- 실제 녹음 시각
+    uploaded_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    recorded_at     DATETIME NULL,
 
     file_url        VARCHAR(500) NOT NULL,
-    file_format     VARCHAR(10)  NOT NULL,  -- wav/mp3/m4a 등
+    file_format     VARCHAR(10)  NOT NULL,
     status          ENUM('pending', 'processed', 'failed') DEFAULT 'pending',
 
-    CONSTRAINT FK_Ward_TO_AudioRecord
+    transcript_text TEXT NULL,
+
+    CONSTRAINT fk_ward_to_audio_record
         FOREIGN KEY (ward_id)
-        REFERENCES Ward(ward_id)
+        REFERENCES ward(ward_id)
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_record_ward ON AudioRecord(ward_id);
-CREATE INDEX idx_record_recent ON AudioRecord(ward_id, uploaded_at);
+CREATE INDEX idx_record_ward ON audio_record(ward_id);
+CREATE INDEX idx_record_recent ON audio_record(ward_id, uploaded_at);
 
 -- ---------------------------------------------
--- 4. AIReport (AI 레포트)
+-- ai_report
 -- ---------------------------------------------
-CREATE TABLE AIReport (
+CREATE TABLE ai_report (
     report_id        INT AUTO_INCREMENT PRIMARY KEY,
-    record_id        INT NOT NULL, 
+    record_id        INT NOT NULL,
 
-    analysis_result  JSON NOT NULL, -- 모델 응답 원본
+    analysis_result  JSON NOT NULL,
 
     created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    CONSTRAINT FK_Record_TO_AIReport
+    CONSTRAINT fk_record_to_ai_report
         FOREIGN KEY (record_id)
-        REFERENCES AudioRecord(record_id)
+        REFERENCES audio_record(record_id)
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_report_record ON AIReport(record_id);
-CREATE INDEX idx_report_recent ON AIReport(created_at);
+CREATE INDEX idx_report_record ON ai_report(record_id);
+CREATE INDEX idx_report_recent ON ai_report(created_at);
