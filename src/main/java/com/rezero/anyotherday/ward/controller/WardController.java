@@ -4,9 +4,11 @@ import com.rezero.anyotherday.ward.dto.WardDto;
 import com.rezero.anyotherday.ward.service.WardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,4 +30,14 @@ public class WardController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    // 2) Ward 목록 조회(guardianId 기준)
+    @Operation(summary = "피보호자 목록조회")
+    @GetMapping
+    public ResponseEntity<List<WardDto>> getWards(@RequestParam int guardianId) {
+        List<WardDto> list = wardService.getWardsByGuardianId(guardianId);
+        return ResponseEntity.ok(list);
+    }
 }
+
+

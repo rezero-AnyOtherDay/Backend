@@ -4,6 +4,7 @@ import com.rezero.anyotherday.guardian.dao.GuardianDao;
 import com.rezero.anyotherday.guardian.dto.GuardianDto;
 import com.rezero.anyotherday.ward.dao.WardDao;
 import com.rezero.anyotherday.ward.dto.WardDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,17 @@ public class WardServiceImpl implements WardService{
         // 4. 방금 생성한 wardDto 그대로 반환
         return wardDto;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<WardDto> getWardsByGuardianId(int guardianId) {
+        // 필요하면 여기서 guardian 존재 여부 검사 가능
+        // GuardianDto guardian = guardianDao.selectById(guardianId);
+        // if (guardian == null) throw new IllegalArgumentException("존재하지 않는 보호자입니다.");
+
+        return wardDao.selectByGuardianId(guardianId);
+    }
 }
+
 
 
