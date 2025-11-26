@@ -2,6 +2,7 @@ package com.rezero.anyotherday.report.dao;
 
 import com.rezero.anyotherday.report.dto.ReportDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -11,35 +12,21 @@ public interface ReportDao {
     /**
      * AI 레포트 생성
      */
-    void createReport(ReportDto report);
+    int createReport(ReportDto report);
 
     /**
      * 레포트 ID로 조회
      */
-    ReportDto getReportById(Integer reportId);
+    ReportDto getReportById(@Param("reportId") Integer reportId);
 
     /**
-     * 오디오 레코드로 레포트 조회
+     * 피보호자의 모든 레포트 조회 (최신 순)
      */
-    ReportDto getReportByRecordId(Integer recordId);
+    List<ReportDto> getReportsByWardId(@Param("wardId") Integer wardId);
 
     /**
-     * 피보호자의 모든 레포트 조회
+     * 피보호자의 가장 최근 레포트 1개 조회
      */
-    List<ReportDto> getReportsByWardId(Integer wardId);
+    ReportDto getLatestReportByWardId(@Param("wardId") Integer wardId);
 
-    /**
-     * 레포트 업데이트
-     */
-    void updateReport(ReportDto report);
-
-    /**
-     * 레포트 삭제
-     */
-    void deleteReport(Integer reportId);
-
-    /**
-     * 최근 N개의 레포트 조회
-     */
-    List<ReportDto> getRecentReports(Integer limit);
 }

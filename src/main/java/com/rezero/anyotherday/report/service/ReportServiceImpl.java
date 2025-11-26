@@ -3,65 +3,44 @@ package com.rezero.anyotherday.report.service;
 import com.rezero.anyotherday.report.dao.ReportDao;
 import com.rezero.anyotherday.report.dto.ReportDto;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReportServiceImpl implements ReportService {
 
     private final ReportDao reportDao;
 
     @Override
-    public ReportDto createReport(ReportDto report) {
-        log.info("Creating AI report for record_id: {}", report.getRecordId());
-        report.setCreatedAt(LocalDateTime.now());
-        report.setUpdatedAt(LocalDateTime.now());
-        reportDao.createReport(report);
-        log.info("AI report created with report_id: {}", report.getReportId());
-        return report;
+    public ReportDto createReport(ReportDto reportDto) {
+        // INSERT 후 reportDto.reportId 에 PK가 세팅됨 (useGeneratedKeys=true)
+        int affected = reportDao.createReport(reportDto);
+        if (affected != 1) {
+            throw new IllegalStateException("AI 레포트 생성 실패");
+        }
+        // 방금 insert한 레포트를 다시 조회해서 반환 (createdAt/updatedAt 포함)
+        return reportDao.getReportById(reportDto.getReportId());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ReportDto getReportById(Integer reportId) {
-        log.info("Fetching AI report with report_id: {}", reportId);
         return reportDao.getReportById(reportId);
     }
 
     @Override
-    public ReportDto getReportByRecordId(Integer recordId) {
-        log.info("Fetching AI report for record_id: {}", recordId);
-        return reportDao.getReportByRecordId(recordId);
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public List<ReportDto> getReportsByWardId(Integer wardId) {
-        log.info("Fetching all AI reports for ward_id: {}", wardId);
         return reportDao.getReportsByWardId(wardId);
     }
 
     @Override
-    public void updateReport(ReportDto report) {
-        log.info("Updating AI report with report_id: {}", report.getReportId());
-        report.setUpdatedAt(LocalDateTime.now());
-        reportDao.updateReport(report);
-        log.info("AI report updated successfully");
-    }
-
-    @Override
-    public void deleteReport(Integer reportId) {
-        log.info("Deleting AI report with report_id: {}", reportId);
-        reportDao.deleteReport(reportId);
-        log.info("AI report deleted successfully");
-    }
-
-    @Override
-    public List<ReportDto> getRecentReports(Integer limit) {
-        log.info("Fetching {} recent AI reports", limit);
-        return reportDao.getRecentReports(limit);
+    @Transactional(readOnly = true)
+    public ReportDto getLatestReportByWardId(Integer wardId) {
+        return reportDao.getLatestReportByWardId(wardId);
     }
 }

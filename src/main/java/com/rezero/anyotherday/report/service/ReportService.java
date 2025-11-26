@@ -8,36 +8,22 @@ public interface ReportService {
 
     /**
      * AI 레포트 생성
+     * - 보통 AI 분석 완료 후 Service 레벨에서 호출
      */
-    ReportDto createReport(ReportDto report);
+    ReportDto createReport(ReportDto reportDto);
 
     /**
-     * 레포트 ID로 조회
+     * 레포트 ID로 단건 조회
      */
     ReportDto getReportById(Integer reportId);
 
     /**
-     * 오디오 레코드로 레포트 조회
-     */
-    ReportDto getReportByRecordId(Integer recordId);
-
-    /**
-     * 피보호자의 모든 레포트 조회
+     * 피보호자의 모든 레포트 조회 (최신 순)
      */
     List<ReportDto> getReportsByWardId(Integer wardId);
 
     /**
-     * 레포트 업데이트
+     * 피보호자의 가장 최근 레포트 1개 조회
      */
-    void updateReport(ReportDto report);
-
-    /**
-     * 레포트 삭제
-     */
-    void deleteReport(Integer reportId);
-
-    /**
-     * 최근 레포트 조회
-     */
-    List<ReportDto> getRecentReports(Integer limit);
+    ReportDto getLatestReportByWardId(Integer wardId);
 }
