@@ -55,6 +55,7 @@ CREATE TABLE audio_record (
     recorded_at     DATETIME NULL,
 
     file_url        VARCHAR(500) NOT NULL,
+    file_format     VARCHAR(20)  NOT NULL,
     
     status          ENUM('uploaded', 'processing', 'completed', 'failed') DEFAULT 'uploaded',
     error_message   TEXT NULL,

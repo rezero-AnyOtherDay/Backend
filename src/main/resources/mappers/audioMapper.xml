@@ -1,11 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.rezero.anyotherday.audio.dao.AudioDao">
+<mapper namespace="com.rezero.anyotherday.audio.dao.AudioRecordDao">
 
-  <!-- TODO: 나중에 실제 SQL 작성 -->
-  <!-- 일단 비어 있는 mapper 여도 문법만 맞으면 실행에 문제 없음 -->
+  <!-- INSERT -->
+  <insert id="createRecord"
+    parameterType="com.rezero.anyotherday.audio.dto.AudioRecordDto"
+    useGeneratedKeys="true"
+    keyProperty="recordId">
+    INSERT INTO audio_record (
+      ward_id,
+      uploaded_at,
+      recorded_at,
+      file_url,
+      file_format,
+      status,
+      error_message
+    )
+    VALUES (
+             #{wardId},
+             NOW(),
+             #{recordedAt},
+             #{fileUrl},
+             #{fileFormat},
+             #{status},
+             #{errorMessage}
+           )
+  </insert>
+
+  <!-- recordId로 조회 -->
+  <select id="getRecordById"
+    parameterType="int"
+    resultType="com.rezero.anyotherday.audio.dto.AudioRecordDto">
+    SELECT
+      record_id       AS recordId,
+      ward_id         AS wardId,
+      uploaded_at     AS uploadedAt,
+      recorded_at     AS recordedAt,
+      file_url        AS fileUrl,
+      file_format     AS fileFormat,
+      status          AS status,
+      error_message   AS errorMessage
+    FROM audio_record
+    WHERE record_id = #{recordId}
+  </select>
+
+  <!-- wardId로 전체 조회 -->
+  <select id="getRecordsByWardId"
+    parameterType="int"
+    resultType="com.rezero.anyotherday.audio.dto.AudioRecordDto">
+    SELECT
+      record_id       AS recordId,
+      ward_id         AS wardId,
+      uploaded_at     AS uploadedAt,
+      recorded_at     AS recordedAt,
+      file_url        AS fileUrl,
+      file_format     AS fileFormat,
+      status          AS status,
+      error_message   AS errorMessage
+    FROM audio_record
+    WHERE ward_id = #{wardId}
+    ORDER BY uploaded_at DESC
+  </select>
+
+  <!-- wardId 기준 최신 1건 -->
+  <select id="getLatestRecordByWardId"
+    parameterType="int"
+    resultType="com.rezero.anyotherday.audio.dto.AudioRecordDto">
+    SELECT
+      record_id       AS recordId,
+      ward_id         AS wardId,
+      uploaded_at     AS uploadedAt,
+      recorded_at     AS recordedAt,
+      file_url        AS fileUrl,
+      file_format     AS fileFormat,
+      status          AS status,
+      error_message   AS errorMessage
+    FROM audio_record
+    WHERE ward_id = #{wardId}
+    ORDER BY uploaded_at DESC
+    LIMIT 1
+  </select>
+
+  <!-- 상태 업데이트 -->
+  <update id="updateStatus">
+    UPDATE audio_record
+    SET status = #{status},
+        error_message = #{errorMessage}
+    WHERE record_id = #{recordId}
+  </update>
 
 </mapper>
