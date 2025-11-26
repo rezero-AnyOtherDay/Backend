@@ -25,6 +25,6 @@ public class AudioRecordDto {
     private String fileUrl;
 
     private String status;
-
-    private String errorMessage;
+    private String fileFormat;
+    private String transcriptText;
 }

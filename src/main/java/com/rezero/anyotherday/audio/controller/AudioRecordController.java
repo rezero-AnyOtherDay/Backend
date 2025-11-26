@@ -28,7 +28,8 @@ public class AudioRecordController {
     private final AudioRecordService audioRecordService;
 
     @Operation(summary = "오디오 파일 업로드")
-    @PostMapping("/ward/{wardId}")
+    @PostMapping( value = "/ward/{wardId}",
+                  consumes = "multipart/form-data")
     public ResponseEntity<Map<String, Object>> uploadAudioRecord(
             @PathVariable Integer wardId,
             @RequestPart("file") MultipartFile file,

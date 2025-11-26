@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class S3Config {
@@ -19,7 +20,7 @@ public class S3Config {
     @Value("${cloud.aws.s3.secret-key:}")
     private String secretKey;
 
-    @Value("${cloud.aws.s3.region:ap-northeast-2}")
+    @Value("${cloud.aws.s3.region}")
     private String region;
 
     @Value("${cloud.aws.s3.bucket:}")
@@ -30,6 +31,7 @@ public class S3Config {
      * cloud.aws.s3.access-key가 설정되어 있으면 활성화
      */
     @Bean
+    @Primary
     @ConditionalOnProperty(name = "cloud.aws.s3.access-key")
     public AmazonS3 amazonS3Client() {
         BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKey, secretKey);
