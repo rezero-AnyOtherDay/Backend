@@ -23,27 +23,36 @@ public class AudioRecordServiceImpl implements AudioRecordService {
             MultipartFile file,
             LocalDateTime recordedAt) {
 
+        // 1) 확장자 추출
         String ext = "";
-        if (file.getOriginalFilename() != null &&
-                file.getOriginalFilename().contains(".")) {
-            ext = file.getOriginalFilename()
-                    .substring(file.getOriginalFilename().lastIndexOf("."));
+        String originalName = file.getOriginalFilename();
+        if (originalName != null && originalName.contains(".")) {
+            ext = originalName.substring(originalName.lastIndexOf(".") + 1); // ← . 제외하고 추출
+        } else {
+            ext = "bin"; // fallback
         }
 
-        String key = "audio/" + wardId + "/" + UUID.randomUUID() + ext;
+        // 2) S3 저장 키 생성
+        String key = "audio/" + wardId + "/" + UUID.randomUUID() + "." + ext;
 
+        // 3) S3 업로드
         String fileUrl = s3AudioStorageService.uploadAudio(file, key);
 
+        // 4) DTO 생성
         AudioRecordDto dto = new AudioRecordDto();
         dto.setWardId(wardId);
         dto.setRecordedAt(recordedAt);
         dto.setFileUrl(fileUrl);
-        dto.setStatus("uploaded");
+        dto.setFileFormat(ext);
+        dto.setStatus("pending");
 
+        // 5) DB Insert
         audioRecordDao.createRecord(dto);
 
+        // 6) Insert 된 값 조회해서 리턴
         return audioRecordDao.getRecordById(dto.getRecordId());
     }
+
 
     @Override
     public AudioRecordDto getRecordById(Integer recordId) {

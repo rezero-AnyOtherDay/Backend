@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS hackathon;
+USE hackathon;
+
 DROP TABLE IF EXISTS ai_report;
 DROP TABLE IF EXISTS audio_record;
 DROP TABLE IF EXISTS ward;
@@ -10,7 +13,7 @@ CREATE TABLE guardian (
     guardian_id   INT AUTO_INCREMENT PRIMARY KEY,
     name          VARCHAR(255) NOT NULL,
     email         VARCHAR(255) NOT NULL UNIQUE,
-    password      VARCHAR(60) NOT NULL,
+    password      VARCHAR(255) NOT NULL,
     phone         VARCHAR(20)  NOT NULL,
     created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -30,7 +33,7 @@ CREATE TABLE ward (
     phone          VARCHAR(15) NOT NULL,
     relationship   VARCHAR(50) NOT NULL,
 
-    diagnosis      JSON NULL,
+    diagnosis      JSON NOT NULL,
 
     created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -55,10 +58,10 @@ CREATE TABLE audio_record (
     recorded_at     DATETIME NULL,
 
     file_url        VARCHAR(500) NOT NULL,
-    file_format     VARCHAR(20)  NOT NULL,
-    
-    status          ENUM('uploaded', 'processing', 'completed', 'failed') DEFAULT 'uploaded',
-    error_message   TEXT NULL,
+    file_format     VARCHAR(10)  NOT NULL,
+    status          ENUM('pending', 'processed', 'failed') DEFAULT 'pending',
+
+    transcript_text TEXT NULL,
 
     CONSTRAINT fk_ward_to_audio_record
         FOREIGN KEY (ward_id)
@@ -89,3 +92,15 @@ CREATE TABLE ai_report (
 
 CREATE INDEX idx_report_record ON ai_report(record_id);
 CREATE INDEX idx_report_recent ON ai_report(created_at);
+
+
+INSERT INTO guardian (name, email, password, phone)
+VALUES ('테스트 보호자', 'test@test.com', 'pass123', '010-0000-0000');
+INSERT INTO ward
+(guardian_id, name, age, gender, phone, relationship, diagnosis)
+VALUES
+(1, '테스트 피보호자', 80, 'male', '010-1111-2222', 'father', '{ "condition": "치매 초기" }');
+
+
+SELECT * FROM guardian;
+SELECT * FROM ward;

@@ -11,23 +11,21 @@
     useGeneratedKeys="true"
     keyProperty="recordId">
     INSERT INTO audio_record (
-      ward_id,
-      uploaded_at,
-      recorded_at,
-      file_url,
-      file_format,
-      status,
-      error_message
+    ward_id,
+    uploaded_at,
+    recorded_at,
+    file_url,
+    file_format,
+    status
     )
     VALUES (
-             #{wardId},
-             NOW(),
-             #{recordedAt},
-             #{fileUrl},
-             #{fileFormat},
-             #{status},
-             #{errorMessage}
-           )
+    #{wardId},
+    NOW(),
+    #{recordedAt},
+    #{fileUrl},
+    #{fileFormat},
+    #{status}
+    )
   </insert>
 
   <!-- recordId로 조회 -->
@@ -35,14 +33,14 @@
     parameterType="int"
     resultType="com.rezero.anyotherday.audio.dto.AudioRecordDto">
     SELECT
-      record_id       AS recordId,
-      ward_id         AS wardId,
-      uploaded_at     AS uploadedAt,
-      recorded_at     AS recordedAt,
-      file_url        AS fileUrl,
-      file_format     AS fileFormat,
-      status          AS status,
-      error_message   AS errorMessage
+    record_id       AS recordId,
+    ward_id         AS wardId,
+    uploaded_at     AS uploadedAt,
+    recorded_at     AS recordedAt,
+    file_url        AS fileUrl,
+    file_format     AS fileFormat,
+    status          AS status,
+    transcript_text AS transcriptText
     FROM audio_record
     WHERE record_id = #{recordId}
   </select>
@@ -52,14 +50,14 @@
     parameterType="int"
     resultType="com.rezero.anyotherday.audio.dto.AudioRecordDto">
     SELECT
-      record_id       AS recordId,
-      ward_id         AS wardId,
-      uploaded_at     AS uploadedAt,
-      recorded_at     AS recordedAt,
-      file_url        AS fileUrl,
-      file_format     AS fileFormat,
-      status          AS status,
-      error_message   AS errorMessage
+    record_id       AS recordId,
+    ward_id         AS wardId,
+    uploaded_at     AS uploadedAt,
+    recorded_at     AS recordedAt,
+    file_url        AS fileUrl,
+    file_format     AS fileFormat,
+    status          AS status,
+    transcript_text AS transcriptText
     FROM audio_record
     WHERE ward_id = #{wardId}
     ORDER BY uploaded_at DESC
@@ -70,14 +68,14 @@
     parameterType="int"
     resultType="com.rezero.anyotherday.audio.dto.AudioRecordDto">
     SELECT
-      record_id       AS recordId,
-      ward_id         AS wardId,
-      uploaded_at     AS uploadedAt,
-      recorded_at     AS recordedAt,
-      file_url        AS fileUrl,
-      file_format     AS fileFormat,
-      status          AS status,
-      error_message   AS errorMessage
+    record_id       AS recordId,
+    ward_id         AS wardId,
+    uploaded_at     AS uploadedAt,
+    recorded_at     AS recordedAt,
+    file_url        AS fileUrl,
+    file_format     AS fileFormat,
+    status          AS status,
+    transcript_text AS transcriptText
     FROM audio_record
     WHERE ward_id = #{wardId}
     ORDER BY uploaded_at DESC
@@ -87,8 +85,7 @@
   <!-- 상태 업데이트 -->
   <update id="updateStatus">
     UPDATE audio_record
-    SET status = #{status},
-        error_message = #{errorMessage}
+    SET status = #{status}
     WHERE record_id = #{recordId}
   </update>
 
