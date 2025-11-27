@@ -41,8 +41,8 @@ public class DiagnoseRequest {
 
     /**
      * 이전 리포트 기록 요약 (RAG용)
-     * 예: ["2025-11-20: 인지기능 저하 패턴 감지", "2025-11-15: 정상"]
+     * 예: {"2025-11-20": "인지기능 저하 패턴 감지", "2025-11-15": "정상"}
      */
     @JsonProperty("report_history")
-    private List<String> reportHistory;
+    private Map<String, String> reportHistory;
 }

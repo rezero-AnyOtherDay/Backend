@@ -96,10 +96,10 @@ public class AudioProcessingServiceImpl implements AudioProcessingService {
 
         // Step 4: Fetch report history (for RAG)
         log.info("Step 4: Fetching report history...");
-        List<String> reportHistory = reportHistoryService.getReportHistory(wardId, 5);
+        Map<String, String> reportHistory = reportHistoryService.getReportHistory(wardId, 5);
         log.info("   Retrieved {} history records", reportHistory.size());
-        for (String history : reportHistory) {
-            log.info("      - {}", history);
+        for (Map.Entry<String, String> entry : reportHistory.entrySet()) {
+            log.info("      - {}: {}", entry.getKey(), entry.getValue());
         }
 
         // Step 5: Parse diagnosis data
@@ -119,19 +119,27 @@ public class AudioProcessingServiceImpl implements AudioProcessingService {
         log.info("   Self Report Keys: {}", selfReport.keySet());
         log.info("   History Size: {}", reportHistory.size());
 
-        DiagnoseResponse aiResponse = aiService.diagnose(aiRequest);
-
-        if (aiResponse == null || !"success".equalsIgnoreCase(aiResponse.getStatus())) {
-            throw new RuntimeException(
-                    "AI diagnosis failed: " + (aiResponse != null ? aiResponse.getError() : "null response")
-            );
+        try {
+            String requestJson = objectMapper.writeValueAsString(aiRequest);
+            log.info("   Full Request: {}", requestJson);
+        } catch (Exception e) {
+            log.warn("Failed to log request: {}", e.getMessage());
         }
 
-        log.info("   AI diagnosis completed: {}", aiResponse.getResult());
+        DiagnoseResponse aiResponse = aiService.diagnose(aiRequest);
+
+        if (aiResponse == null) {
+            throw new RuntimeException("AI diagnosis failed: null response");
+        }
+
+        log.info("   AI diagnosis completed");
+        log.info("   - Accuracy: {}", aiResponse.getAccuracy());
+        log.info("   - Risk: {}", aiResponse.getRisk());
+        log.info("   - Summary: {}", aiResponse.getSummary());
 
         // Step 7: Save report
         log.info("Step 7: Saving AI analysis result to report...");
-        String analysisResultJson = objectMapper.writeValueAsString(aiResponse.getResult());
+        String analysisResultJson = objectMapper.writeValueAsString(aiResponse);
 
         ReportDto reportDto = ReportDto.builder()
                 .recordId(recordId)

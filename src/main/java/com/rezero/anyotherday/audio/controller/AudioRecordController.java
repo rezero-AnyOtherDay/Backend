@@ -124,4 +124,29 @@ public class AudioRecordController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @Operation(summary = "오디오 레코드 동기 처리 (테스트용)")
+    @PostMapping("/{recordId}/process-sync")
+    public ResponseEntity<Map<String, Object>> processAudioSync(
+            @PathVariable Integer recordId,
+            @RequestParam Integer wardId
+    ) {
+        try {
+            log.info("Manual sync audio processing triggered - recordId: {}, wardId: {}", recordId, wardId);
+
+            audioProcessingService.processAudioSync(recordId, wardId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Audio processing completed");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error processing audio", e);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Processing failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }

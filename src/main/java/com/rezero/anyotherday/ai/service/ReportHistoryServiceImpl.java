@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 리포트 히스토리 조회 서비스 구현
@@ -29,10 +30,11 @@ public class ReportHistoryServiceImpl implements ReportHistoryService {
     /**
      * 특정 피보호자의 최근 리포트 요약 조회
      * 최근 N개의 리포트를 조회하고 요약한다
+     * 반환 형식: {"2025-11-20": "인지기능 저하 패턴 감지", "2025-11-15": "정상"}
      */
     @Override
-    public List<String> getReportHistory(Integer wardId, int limit) {
-        List<String> history = new ArrayList<>();
+    public Map<String, String> getReportHistory(Integer wardId, int limit) {
+        Map<String, String> history = new java.util.LinkedHashMap<>();
 
         try {
             log.info("Fetching report history - wardId: {}, limit: {}", wardId, limit);
@@ -49,17 +51,18 @@ public class ReportHistoryServiceImpl implements ReportHistoryService {
 
             // Convert each report to summary string
             for (ReportDto report : reports) {
+                String createdDate = report.getCreatedAt().format(DATE_FORMATTER);
                 String summary = summarizeReport(
                         report.getAnalysisResult(),
-                        report.getCreatedAt().format(DATE_FORMATTER)
+                        createdDate
                 );
-                history.add(summary);
-                log.debug("  - {}", summary);
+                history.put(createdDate, summary);
+                log.debug("  - {}: {}", createdDate, summary);
             }
 
         } catch (Exception e) {
             log.warn("Failed to fetch report history: {}", e.getMessage());
-            // Return empty list on failure (AI call continues)
+            // Return empty map on failure (AI call continues)
         }
 
         return history;

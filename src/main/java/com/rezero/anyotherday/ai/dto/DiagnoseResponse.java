@@ -6,9 +6,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * AI 서버의 응답 DTO
- * FastAPI의 응답을 파싱하기 위한 구조
+ * AI 서버 응답 형식:
+ * {
+ *   "accuracy": [뇌졸중%, 퇴행성%, 정상%],
+ *   "ASR": "전체 대화 내용",
+ *   "risk": ["뇌졸중", "치매", "파킨슨", "루게릭"],
+ *   "explain": ["뇌졸중 설명", "치매 설명", "파킨슨 설명", "루게릭 설명"],
+ *   "summary": "종합 소견 (200~300자)"
+ * }
  */
 @Data
 @NoArgsConstructor
@@ -16,33 +25,46 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DiagnoseResponse {
     /**
-     * AI 진단 결과 (JSON 형식)
-     * 예: {
-     *   "diagnosis": "경도 인지장애 의심",
-     *   "risk_level": "medium",
-     *   "recommendations": ["병원 방문 권고", "인지훈련"],
-     *   "key_findings": ["단어 회상 어려움", "일상 업무 지연"],
-     *   "confidence_score": 0.85
-     * }
+     * 질병별 정확도 (%)
+     * [뇌졸중%, 퇴행성%, 정상%]
      */
-    @JsonProperty("result")
-    private Object result;
+    @JsonProperty("accuracy")
+    private List<Double> accuracy;
 
     /**
-     * 진단 상태
-     * 예: "success"
+     * 자동음성인식(ASR) 결과 - 전체 대화 내용
+     */
+    @JsonProperty("ASR")
+    private String asr;
+
+    /**
+     * 위험 질병 목록
+     * ["뇌졸중", "치매", "파킨슨", "루게릭"]
+     */
+    @JsonProperty("risk")
+    private List<String> risk;
+
+    /**
+     * 질병별 설명
+     * ["뇌졸중 설명", "치매 설명", "파킨슨 설명", "루게릭 설명"]
+     */
+    @JsonProperty("explain")
+    private List<String> explain;
+
+    /**
+     * 종합 소견 (200~300자)
+     */
+    @JsonProperty("summary")
+    private String summary;
+
+    /**
+     * 진단 상태 (status는 응답에 없음 - 응답이 있으면 성공)
      */
     @JsonProperty("status")
     private String status;
 
     /**
-     * 추가 메시지
-     */
-    @JsonProperty("message")
-    private String message;
-
-    /**
-     * 에러 메시지 (status=error인 경우)
+     * 에러 메시지
      */
     @JsonProperty("error")
     private String error;

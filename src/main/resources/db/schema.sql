@@ -59,7 +59,8 @@ CREATE TABLE audio_record (
 
     file_url        VARCHAR(500) NOT NULL,
     file_format     VARCHAR(10)  NOT NULL,
-    status          ENUM('pending', 'processed', 'failed') DEFAULT 'pending',
+    status          ENUM('pending', 'processing', 'completed', 'failed') DEFAULT 'pending',
+    error_message   TEXT NULL,
 
     transcript_text TEXT NULL,
 

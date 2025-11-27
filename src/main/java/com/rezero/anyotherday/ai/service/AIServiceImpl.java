@@ -60,37 +60,74 @@ public class AIServiceImpl implements AIService {
             String url = aiServerUrl + diagnoseEndpoint;
             log.info("  - Target URL: {}", url);
 
+            // 요청 데이터를 JSON 문자열로 로깅
+            try {
+                String requestJson = objectMapper.writeValueAsString(request);
+                log.info("  - Request Body: {}", requestJson);
+            } catch (Exception e) {
+                log.warn("Failed to serialize request for logging: {}", e.getMessage());
+            }
+
             // HTTP 요청 생성
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<DiagnoseRequest> entity = new HttpEntity<>(request, headers);
 
-            // AI 서버 호출
-            ResponseEntity<DiagnoseResponse> response = restTemplate.postForEntity(
+            // AI 서버 호출 - 원본 응답을 String으로 먼저 받기
+            ResponseEntity<String> rawResponse = restTemplate.postForEntity(
                     url,
                     entity,
-                    DiagnoseResponse.class
+                    String.class
             );
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                log.info("AI diagnosis completed - Status: {}", response.getBody().getStatus());
-                return response.getBody();
+            log.info("AI server response status: {}", rawResponse.getStatusCode());
+            log.info("AI server raw response body: {}", rawResponse.getBody());
+
+            if (rawResponse.getStatusCode().is2xxSuccessful()) {
+                // 원본 응답을 DiagnoseResponse로 파싱
+                try {
+                    DiagnoseResponse diagnoseResponse = objectMapper.readValue(
+                            rawResponse.getBody(),
+                            DiagnoseResponse.class
+                    );
+                    log.info("Parsed DiagnoseResponse: {}", diagnoseResponse);
+                    log.info("  - accuracy: {}", diagnoseResponse.getAccuracy());
+                    log.info("  - asr: {}", diagnoseResponse.getAsr());
+                    log.info("  - risk: {}", diagnoseResponse.getRisk());
+                    log.info("  - explain: {}", diagnoseResponse.getExplain());
+                    log.info("  - summary: {}", diagnoseResponse.getSummary());
+
+                    // AI 서버 응답에 accuracy가 있으면 성공
+                    if (diagnoseResponse.getAccuracy() != null && !diagnoseResponse.getAccuracy().isEmpty()) {
+                        log.info("AI diagnosis completed successfully");
+                        return diagnoseResponse;
+                    } else {
+                        log.error("AI diagnosis response is missing required fields");
+                        throw new RuntimeException(
+                                "AI diagnosis failed: Missing required fields (accuracy)"
+                        );
+                    }
+                } catch (Exception parseException) {
+                    log.error("Failed to parse AI response: {}", parseException.getMessage());
+                    throw new RuntimeException("Failed to parse AI response: " + parseException.getMessage());
+                }
             } else {
-                log.error("AI server response error - Status: {}", response.getStatusCode());
+                log.error("AI server response error - Status: {}", rawResponse.getStatusCode());
+                log.error("Response body: {}", rawResponse.getBody());
                 throw new RuntimeException(
-                        "AI server returned non-2xx status: " + response.getStatusCode()
+                        "AI server returned non-2xx status: " + rawResponse.getStatusCode()
                 );
             }
 
         } catch (RestClientException e) {
-            log.error("AI server connection failed", e);
+            log.error("AI server connection failed: {}", e.getMessage(), e);
             throw new RuntimeException(
                     "Failed to connect to AI server at " + aiServerUrl + ": " + e.getMessage(),
                     e
             );
         } catch (Exception e) {
-            log.error("Error during AI diagnosis processing", e);
+            log.error("Error during AI diagnosis processing: {}", e.getMessage(), e);
             throw new RuntimeException(
                     "Error during AI diagnosis: " + e.getMessage(),
                     e
@@ -137,12 +174,16 @@ public class AIServiceImpl implements AIService {
     private DiagnoseResponse createMockResponse() {
         log.info("Returning mock AI response");
         return DiagnoseResponse.builder()
-                .status("success")
-                .result(objectMapper.createObjectNode()
-                        .put("diagnosis", "Mock diagnosis result")
-                        .put("confidence_score", 0.75)
-                        .put("message", "This is a mock response (AI service disabled)"))
-                .message("Mock response - AI service is disabled")
+                .accuracy(java.util.List.of(45.0, 30.0, 25.0))
+                .asr("Mock ASR 결과 - 테스트 모드에서 생성된 대화 기록입니다.")
+                .risk(java.util.List.of("뇌졸중", "치매"))
+                .explain(java.util.List.of(
+                        "뇌졸중 의심: 45% 확률로 위험합니다.",
+                        "치매 의심: 30% 확률로 위험합니다.",
+                        "파킨슨: 10% 확률입니다.",
+                        "루게릭: 5% 확률입니다."
+                ))
+                .summary("종합 소견: 테스트 모드에서 생성된 목 응답입니다. 실제 AI 서버의 응답을 기다리고 있습니다.")
                 .build();
     }
 }
