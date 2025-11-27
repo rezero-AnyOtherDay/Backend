@@ -61,4 +61,20 @@
         LIMIT 1
     </select>
 
+    <!-- 피보호자의 최근 N개 레포트 조회 (RAG용 히스토리) -->
+    <select id="getRecentReportsByWard"
+      resultType="com.rezero.anyotherday.report.dto.ReportDto">
+        SELECT
+            ar.report_id      AS reportId,
+            ar.record_id      AS recordId,
+            ar.analysis_result AS analysisResult,
+            ar.created_at     AS createdAt,
+            ar.updated_at     AS updatedAt
+        FROM ai_report ar
+                 JOIN audio_record aud ON ar.record_id = aud.record_id
+        WHERE aud.ward_id = #{wardId}
+        ORDER BY ar.created_at DESC
+        LIMIT #{limit}
+    </select>
+
 </mapper>

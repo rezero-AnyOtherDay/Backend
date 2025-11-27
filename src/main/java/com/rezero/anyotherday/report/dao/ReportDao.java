@@ -29,4 +29,11 @@ public interface ReportDao {
      */
     ReportDto getLatestReportByWardId(@Param("wardId") Integer wardId);
 
+    /**
+     * 피보호자의 최근 N개 레포트 조회 (RAG용 히스토리)
+     */
+    List<ReportDto> getRecentReportsByWard(
+            @Param("wardId") Integer wardId,
+            @Param("limit") int limit
+    );
 }

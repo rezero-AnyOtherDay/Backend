@@ -1,6 +1,7 @@
 package com.rezero.anyotherday.audio.controller;
 
 import com.rezero.anyotherday.audio.dto.AudioRecordDto;
+import com.rezero.anyotherday.audio.service.AudioProcessingService;
 import com.rezero.anyotherday.audio.service.AudioRecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +27,7 @@ import java.util.Map;
 public class AudioRecordController {
 
     private final AudioRecordService audioRecordService;
+    private final AudioProcessingService audioProcessingService;
 
     @Operation(summary = "오디오 파일 업로드")
     @PostMapping("/ward/{wardId}")
@@ -45,10 +47,14 @@ public class AudioRecordController {
 
             AudioRecordDto result = audioRecordService.uploadAndCreateRecord(wardId, file, recordedAt);
 
+            // Start async AI processing (audio analysis and report generation)
+            log.info("Starting async AI processing - recordId: {}", result.getRecordId());
+            audioProcessingService.processAudioAsync(result.getRecordId(), wardId);
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("data", result);
-            response.put("message", "Audio record uploaded successfully");
+            response.put("message", "Audio record uploaded successfully. AI analysis in progress...");
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
