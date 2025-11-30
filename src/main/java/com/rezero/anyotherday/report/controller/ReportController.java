@@ -40,4 +40,13 @@ public class ReportController {
     public ReportDto getLatestReportByWard(@PathVariable Integer wardId) {
         return reportService.getLatestReportByWardId(wardId);
     }
+
+    /**
+     * 오디오 레코드 ID로 레포트 조회
+     * GET /api/v1/reports/record/{recordId}
+     */
+    @GetMapping("/record/{recordId}")
+    public ReportDto getReportByRecordId(@PathVariable Integer recordId) {
+        return reportService.getReportByRecordId(recordId);
+    }
 }

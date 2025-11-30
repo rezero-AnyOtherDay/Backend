@@ -77,4 +77,18 @@
         LIMIT #{limit}
     </select>
 
+    <!-- 오디오 레코드 ID로 레포트 조회 -->
+    <select id="getReportByRecordId"
+      parameterType="int"
+      resultType="com.rezero.anyotherday.report.dto.ReportDto">
+        SELECT
+            report_id       AS reportId,
+            record_id       AS recordId,
+            analysis_result AS analysisResult,
+            created_at      AS createdAt,
+            updated_at      AS updatedAt
+        FROM ai_report
+        WHERE record_id = #{recordId}
+    </select>
+
 </mapper>

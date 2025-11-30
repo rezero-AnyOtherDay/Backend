@@ -26,4 +26,9 @@ public interface ReportService {
      * 피보호자의 가장 최근 레포트 1개 조회
      */
     ReportDto getLatestReportByWardId(Integer wardId);
+
+    /**
+     * 오디오 레코드 ID로 레포트 조회
+     */
+    ReportDto getReportByRecordId(Integer recordId);
 }

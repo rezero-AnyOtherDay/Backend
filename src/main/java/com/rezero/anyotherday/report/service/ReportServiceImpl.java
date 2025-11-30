@@ -50,4 +50,10 @@ public class ReportServiceImpl implements ReportService {
         log.info("Fetching latest report for wardId: {}", wardId);
         return reportDao.getLatestReportByWardId(wardId);
     }
+
+    @Override
+    public ReportDto getReportByRecordId(Integer recordId) {
+        log.info("Fetching report for recordId: {}", recordId);
+        return reportDao.getReportByRecordId(recordId);
+    }
 }

@@ -36,4 +36,9 @@ public interface ReportDao {
             @Param("wardId") Integer wardId,
             @Param("limit") int limit
     );
+
+    /**
+     * 오디오 레코드 ID로 레포트 조회
+     */
+    ReportDto getReportByRecordId(@Param("recordId") Integer recordId);
 }
