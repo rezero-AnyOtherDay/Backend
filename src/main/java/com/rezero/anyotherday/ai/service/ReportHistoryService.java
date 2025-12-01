@@ -8,15 +8,15 @@ import java.util.Map;
  */
 public interface ReportHistoryService {
     /**
-     * 특정 피보호자의 최근 리포트 요약 조회
-     * 최근 N개의 리포트를 요약한 문자열 맵으로 반환
+     * 특정 피보호자의 가장 최근 리포트 요약 조회
+     * 가장 최근의 진단 요약본만 반환 (AI 서버에 전송용)
      *
      * @param wardId 피보호자 ID
-     * @param limit 조회할 리포트 개수 (기본값: 5)
-     * @return 리포트 요약 맵 (날짜 → 요약)
-     *         예: {"2025-11-20": "인지기능 저하 패턴 감지", "2025-11-15": "정상"}
+     * @return 리포트 요약 Map (key: 날짜, value: 요약)
+     *         예: {"2025-11-27": "주의 (확률: 93.5%)"}
+     *         없으면 빈 Map 반환
      */
-    Map<String, String> getReportHistory(Integer wardId, int limit);
+    Map<String, String> getRecentReportSummary(Integer wardId);
 
     /**
      * 리포트 요약 생성

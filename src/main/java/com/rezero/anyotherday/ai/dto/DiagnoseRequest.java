@@ -29,19 +29,22 @@ public class DiagnoseRequest {
      * 사용자 자가진단 결과
      * 예: {
      *   "answered": true,
-     *   "survey": {
-     *     "질문1": 3,
-     *     "질문2": 1,
+     *   "completedAt": "2025-12-01T10:30:00Z",
+     *   "questions": [
+     *     {"text": "손이나 팔에 힘이...", "answer": 3},
      *     ...
-     *   }
+     *   ]
      * }
      */
     @JsonProperty("self_report")
     private Map<String, Object> selfReport;
 
     /**
-     * 이전 리포트 기록 요약 (RAG용)
-     * 예: {"2025-11-20": "인지기능 저하 패턴 감지", "2025-11-15": "정상"}
+     * 이전 최근 리포트 요약 (RAG용)
+     * AI 서버가 dict 타입으로 기대하므로 Map 형식으로 전달
+     * 가장 최근의 진단 요약본만 담음 (key: 날짜, value: 요약)
+     * 예: {"2025-11-27": "주의 (확률: 93.5%)"}
+     * 또는 이전 리포트가 없으면 빈 map
      */
     @JsonProperty("report_history")
     private Map<String, String> reportHistory;
