@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 /**
  * FastAPI AI 서버와 통신하는 서비스 구현
  */
@@ -55,7 +57,12 @@ public class AIServiceImpl implements AIService {
             log.info("AI diagnosis request started");
             log.info("  - Audio: {}", request.getAudioPath());
             log.info("  - Self Report: {}", request.getSelfReport());
-            log.info("  - History Records: {}", request.getReportHistory().size());
+            log.info("  - Report History Size: {}", request.getReportHistory().size());
+            if (!request.getReportHistory().isEmpty()) {
+                for (Map.Entry<String, String> entry : request.getReportHistory().entrySet()) {
+                    log.info("      - Date: {}, Summary: {}", entry.getKey(), entry.getValue());
+                }
+            }
 
             String url = aiServerUrl + diagnoseEndpoint;
             log.info("  - Target URL: {}", url);
@@ -91,11 +98,21 @@ public class AIServiceImpl implements AIService {
                             rawResponse.getBody(),
                             DiagnoseResponse.class
                     );
+
+                    // explain 배열에서 빈 문자열 제거
+                    if (diagnoseResponse.getExplain() != null) {
+                        diagnoseResponse.setExplain(
+                            diagnoseResponse.getExplain().stream()
+                                .filter(s -> s != null && !s.trim().isEmpty())
+                                .toList()
+                        );
+                    }
+
                     log.info("Parsed DiagnoseResponse: {}", diagnoseResponse);
                     log.info("  - accuracy: {}", diagnoseResponse.getAccuracy());
                     log.info("  - asr: {}", diagnoseResponse.getAsr());
                     log.info("  - risk: {}", diagnoseResponse.getRisk());
-                    log.info("  - explain: {}", diagnoseResponse.getExplain());
+                    log.info("  - explain (cleaned): {}", diagnoseResponse.getExplain());
                     log.info("  - summary: {}", diagnoseResponse.getSummary());
 
                     // AI 서버 응답에 accuracy가 있으면 성공

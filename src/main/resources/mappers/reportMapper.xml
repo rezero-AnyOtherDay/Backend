@@ -10,8 +10,8 @@
       parameterType="com.rezero.anyotherday.report.dto.ReportDto"
       useGeneratedKeys="true"
       keyProperty="reportId">
-        INSERT INTO ai_report (record_id, analysis_result)
-        VALUES (#{recordId}, #{analysisResult})
+        INSERT INTO ai_report (record_id, analysis_result, summary)
+        VALUES (#{recordId}, #{analysisResult}, #{summary})
     </insert>
 
     <!-- 레포트 ID로 단건 조회 -->
@@ -22,6 +22,7 @@
             report_id   AS reportId,
             record_id   AS recordId,
             analysis_result AS analysisResult,
+            summary     AS summary,
             created_at  AS createdAt,
             updated_at  AS updatedAt
         FROM ai_report
@@ -36,6 +37,7 @@
             ar.report_id      AS reportId,
             ar.record_id      AS recordId,
             ar.analysis_result AS analysisResult,
+            ar.summary        AS summary,
             ar.created_at     AS createdAt,
             ar.updated_at     AS updatedAt
         FROM ai_report ar
@@ -52,6 +54,7 @@
             ar.report_id      AS reportId,
             ar.record_id      AS recordId,
             ar.analysis_result AS analysisResult,
+            ar.summary        AS summary,
             ar.created_at     AS createdAt,
             ar.updated_at     AS updatedAt
         FROM ai_report ar
@@ -68,6 +71,7 @@
             ar.report_id      AS reportId,
             ar.record_id      AS recordId,
             ar.analysis_result AS analysisResult,
+            ar.summary        AS summary,
             ar.created_at     AS createdAt,
             ar.updated_at     AS updatedAt
         FROM ai_report ar
@@ -85,6 +89,7 @@
             report_id       AS reportId,
             record_id       AS recordId,
             analysis_result AS analysisResult,
+            summary         AS summary,
             created_at      AS createdAt,
             updated_at      AS updatedAt
         FROM ai_report

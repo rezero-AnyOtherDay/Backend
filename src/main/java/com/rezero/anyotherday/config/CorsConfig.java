@@ -18,7 +18,8 @@ public class CorsConfig implements WebMvcConfigurer {
                         "http://localhost:3000",      // Next.js 개발 서버
                         "http://localhost:3001",      // 백업 포트
                         "http://127.0.0.1:3000",
-                        "http://127.0.0.1:3001"
+                        "http://127.0.0.1:3001",
+                        "http://10.50.1.186:3000"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")

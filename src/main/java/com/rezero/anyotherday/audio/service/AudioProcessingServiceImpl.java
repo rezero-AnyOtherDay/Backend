@@ -94,12 +94,13 @@ public class AudioProcessingServiceImpl implements AudioProcessingService {
         log.info("Step 3: Updating status to processing...");
         audioRecordService.updateStatus(recordId, "processing", null);
 
-        // Step 4: Fetch report history (for RAG)
-        log.info("Step 4: Fetching report history...");
-        Map<String, String> reportHistory = reportHistoryService.getReportHistory(wardId, 5);
-        log.info("   Retrieved {} history records", reportHistory.size());
-        for (Map.Entry<String, String> entry : reportHistory.entrySet()) {
-            log.info("      - {}: {}", entry.getKey(), entry.getValue());
+        // Step 4: Fetch most recent report history (for RAG)
+        log.info("Step 4: Fetching most recent report summary...");
+        Map<String, String> reportHistory = reportHistoryService.getRecentReportSummary(wardId);
+        if (reportHistory == null || reportHistory.isEmpty()) {
+            log.info("   No previous reports found for wardId: {}", wardId);
+        } else {
+            log.info("   Recent report summary: {}", reportHistory);
         }
 
         // Step 5: Parse diagnosis data
@@ -117,11 +118,17 @@ public class AudioProcessingServiceImpl implements AudioProcessingService {
 
         log.info("   Audio Path: {}", aiRequest.getAudioPath());
         log.info("   Self Report Keys: {}", selfReport.keySet());
-        log.info("   History Size: {}", reportHistory.size());
+        log.info("   Report History Size: {}", reportHistory.size());
+        if (!reportHistory.isEmpty()) {
+            for (Map.Entry<String, String> entry : reportHistory.entrySet()) {
+                log.info("      - Date: {}, Summary: {}", entry.getKey(), entry.getValue());
+            }
+        }
 
         try {
             String requestJson = objectMapper.writeValueAsString(aiRequest);
-            log.info("   Full Request: {}", requestJson);
+            log.info("   Full Request JSON (length: {}): {}", requestJson.length(),
+                    requestJson.length() > 500 ? requestJson.substring(0, 500) + "..." : requestJson);
         } catch (Exception e) {
             log.warn("Failed to log request: {}", e.getMessage());
         }
@@ -144,6 +151,7 @@ public class AudioProcessingServiceImpl implements AudioProcessingService {
         ReportDto reportDto = ReportDto.builder()
                 .recordId(recordId)
                 .analysisResult(analysisResultJson)
+                .summary(aiResponse.getSummary())  // AI 응답의 summary 저장
                 .build();
 
         ReportDto savedReport = reportService.createReport(reportDto);
