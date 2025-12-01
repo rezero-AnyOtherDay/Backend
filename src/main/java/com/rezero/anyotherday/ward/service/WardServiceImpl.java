@@ -26,7 +26,8 @@ public class WardServiceImpl implements WardService {
                 throw new IllegalArgumentException("존재하지 않는 보호자입니다.");
             }
 
-            log.info("Creating ward for guardianId: {}, name: {}", wardDto.getGuardianId(), wardDto.getName());
+            log.info("Creating ward for guardianId: {}, name: {}, birthDate: {}, age: {}",
+                wardDto.getGuardianId(), wardDto.getName(), wardDto.getBirthDate(), wardDto.getAge());
 
             // 2. 생성 시 diagnosis 는 항상 기본 JSON으로 고정 (클라 값 무시)
             wardDto.setDiagnosis("{\"answered\":false}");

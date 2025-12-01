@@ -1,10 +1,12 @@
 package com.rezero.anyotherday.ward.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -17,6 +19,8 @@ public class WardDto {
     private Integer guardianId;  // guardian_id FK
 
     private String name;         // name
+    @JsonProperty("birthDate")
+    private LocalDate birthDate; // birth_date
     private Integer age;         // age
     private String gender;       // 'male' / 'female'
     private String phone;        // phone

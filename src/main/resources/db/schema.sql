@@ -28,6 +28,7 @@ CREATE TABLE ward (
     guardian_id    INT NOT NULL,
 
     name           VARCHAR(255) NOT NULL,
+    birth_date     DATE NOT NULL,
     age            INT NOT NULL,
     gender         ENUM('male', 'female') NOT NULL,
     phone          VARCHAR(15) NOT NULL,
@@ -81,6 +82,7 @@ CREATE TABLE ai_report (
     record_id        INT NOT NULL,
 
     analysis_result  JSON NOT NULL,
+    summary          TEXT NULL COMMENT '과거~현재 200자 요약 (이전 대화 요약)',
 
     created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

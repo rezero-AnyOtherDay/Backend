@@ -14,6 +14,7 @@
     INSERT INTO ward (
     guardian_id,
     name,
+    birth_date,
     age,
     gender,
     phone,
@@ -23,6 +24,7 @@
     VALUES (
     #{guardianId},
     #{name},
+    #{birthDate},
     #{age},
     #{gender},
     #{phone},
@@ -39,6 +41,7 @@
     ward_id      AS wardId,
     guardian_id  AS guardianId,
     name,
+    birth_date   AS birthDate,
     age,
     gender,
     phone,
@@ -61,6 +64,7 @@
         ward_id      AS wardId,
         guardian_id  AS guardianId,
         name,
+        birth_date   AS birthDate,
         age,
         gender,
         phone,
