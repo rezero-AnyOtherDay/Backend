@@ -94,19 +94,32 @@ public class AIServiceImpl implements AIService {
             if (rawResponse.getStatusCode().is2xxSuccessful()) {
                 // 원본 응답을 DiagnoseResponse로 파싱
                 try {
+                    // AI 서버 응답이 {"result": {...}} 형태일 수 있으므로 처리
+                    String responseBody = rawResponse.getBody();
+                    Map<String, Object> responseMap = objectMapper.readValue(
+                            responseBody,
+                            Map.class
+                    );
+
+                    // "result" 필드가 있으면 그것을 파싱, 없으면 전체를 파싱
+                    String bodyToParse = responseBody;
+                    if (responseMap.containsKey("result")) {
+                        log.info("AI 응답이 'result' 필드로 감싸져 있음");
+                        Object resultObj = responseMap.get("result");
+                        if (resultObj != null) {
+                            bodyToParse = objectMapper.writeValueAsString(resultObj);
+                            log.info("'result' 필드에서 추출한 내용으로 파싱");
+                        }
+                    }
+
                     DiagnoseResponse diagnoseResponse = objectMapper.readValue(
-                            rawResponse.getBody(),
+                            bodyToParse,
                             DiagnoseResponse.class
                     );
 
-                    // explain 배열에서 빈 문자열 제거
-                    if (diagnoseResponse.getExplain() != null) {
-                        diagnoseResponse.setExplain(
-                            diagnoseResponse.getExplain().stream()
-                                .filter(s -> s != null && !s.trim().isEmpty())
-                                .toList()
-                        );
-                    }
+                    // explain 배열에서는 빈 문자열을 제거하지 않음
+                    // 빈 문자열이나 null은 그대로 두어 질병 순서를 유지
+                    // 프론트에서 빈 문자열/null 항목에 대해 카드를 만들지 않도록 처리
 
                     log.info("Parsed DiagnoseResponse: {}", diagnoseResponse);
                     log.info("  - accuracy: {}", diagnoseResponse.getAccuracy());
