@@ -89,7 +89,7 @@ public class AIServiceImpl implements AIService {
             );
 
             log.info("AI server response status: {}", rawResponse.getStatusCode());
-            log.info("AI server raw response body: {}", rawResponse.getBody());
+            log.info("AI server raw response body (full): {}", rawResponse.getBody());
 
             if (rawResponse.getStatusCode().is2xxSuccessful()) {
                 // 원본 응답을 DiagnoseResponse로 파싱
@@ -125,8 +125,20 @@ public class AIServiceImpl implements AIService {
                                 "AI diagnosis failed: Missing required fields (accuracy)"
                         );
                     }
+                } catch (com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException e) {
+                    log.error("JSON parsing error - Unrecognized property: {}", e.getPropertyName());
+                    log.error("Failed to parse AI response - Response structure mismatch");
+                    log.error("Response body for inspection: {}", rawResponse.getBody());
+                    throw new RuntimeException("Failed to parse AI response - Response structure doesn't match expected format. Unrecognized property: " + e.getPropertyName());
+                } catch (com.fasterxml.jackson.databind.JsonMappingException e) {
+                    log.error("JSON mapping error: {}", e.getMessage());
+                    log.error("Failed to map AI response to DiagnoseResponse class");
+                    log.error("Response body for inspection: {}", rawResponse.getBody());
+                    throw new RuntimeException("Failed to parse AI response - JSON structure mismatch: " + e.getMessage());
                 } catch (Exception parseException) {
                     log.error("Failed to parse AI response: {}", parseException.getMessage());
+                    log.error("Exception type: {}", parseException.getClass().getName());
+                    log.error("Response body for inspection: {}", rawResponse.getBody());
                     throw new RuntimeException("Failed to parse AI response: " + parseException.getMessage());
                 }
             } else {

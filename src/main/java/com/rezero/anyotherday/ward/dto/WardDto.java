@@ -1,6 +1,7 @@
 package com.rezero.anyotherday.ward.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class WardDto {
 
     private String name;         // name
     @JsonProperty("birthDate")
+    @JsonFormat(shape = com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate birthDate; // birth_date
     private Integer age;         // age
     private String gender;       // 'male' / 'female'

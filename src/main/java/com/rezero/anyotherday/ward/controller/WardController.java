@@ -10,11 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/wards")
@@ -29,6 +31,16 @@ public class WardController {
     @PostMapping
     public ResponseEntity<?> createWard(@RequestBody WardDto request) {
         try {
+            // 요청 데이터 로깅
+            log.info("CreateWard request - name: {}, birthDate: {}, age: {}, gender: {}",
+                request.getName(), request.getBirthDate(), request.getAge(), request.getGender());
+
+            // birthDate 검증
+            if (request.getBirthDate() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("생년월일(birthDate)은 필수 입력값입니다.");
+            }
+
             WardDto result = wardService.createWard(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } catch (IllegalArgumentException e) {
@@ -40,7 +52,10 @@ public class WardController {
     @Operation(summary = "피보호자 목록조회")
     @GetMapping
     public ResponseEntity<List<WardDto>> getWards(@RequestParam int guardianId) {
+        log.info("피보호자 목록 조회 - guardianId: {}", guardianId);
         List<WardDto> list = wardService.getWardsByGuardianId(guardianId);
+        log.info("조회된 피보호자 개수: {}", list.size());
+        log.info("피보호자 목록: {}", list);
         return ResponseEntity.ok(list);
     }
 

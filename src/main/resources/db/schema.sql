@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS hackathon;
-USE hackathon;
+CREATE DATABASE IF NOT EXISTS rezero_db;
+USE rezero_db;
 
 DROP TABLE IF EXISTS ai_report;
 DROP TABLE IF EXISTS audio_record;
@@ -99,11 +99,6 @@ CREATE INDEX idx_report_recent ON ai_report(created_at);
 
 INSERT INTO guardian (name, email, password, phone)
 VALUES ('테스트 보호자', 'test@test.com', 'pass123', '010-0000-0000');
-INSERT INTO ward
-(guardian_id, name, age, gender, phone, relationship, diagnosis)
-VALUES
-(1, '테스트 피보호자', 80, 'male', '010-1111-2222', 'father', '{ "condition": "치매 초기" }');
-
 
 SELECT * FROM guardian;
 SELECT * FROM ward;
